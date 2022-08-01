@@ -1,104 +1,115 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/SecondRoute.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/services.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
-class formRegistration extends StatefulWidget {
-  const formRegistration({Key? key}) : super(key: key);
+class kalkulator extends StatefulWidget {
+  const kalkulator({Key? key}) : super(key: key);
 
   @override
-  State<formRegistration> createState() => _formRegistrationState();
+  State<kalkulator> createState() => _kalkulatorState();
 }
 
-class _formRegistrationState extends State<formRegistration> {
-  TextEditingController ctrUsername = new TextEditingController();
-  TextEditingController ctrPassword = new TextEditingController();
+class _kalkulatorState extends State<kalkulator> {
+  TextEditingController ctrPanjang = new TextEditingController();
+  TextEditingController ctrLebar = new TextEditingController();
+  TextEditingController ctrHasil = new TextEditingController();
   int id = 1;
-  String myphone = "-";
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Form Registrasi"),
-        ),
-        body: Container(
-            margin: EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 10,
-                ),
-                TextField(
-                    controller: ctrUsername,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'username',
-                    )),
-                Container(
-                  height: 20,
-                ),
-                TextField(
-                    controller: ctrPassword,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'password',
-                    )),
-                SizedBox(
-                  height: 10,
-                ),
-                Text("jenis kelamin"),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    Radio(
-                        value: 1,
-                        groupValue: id,
-                        onChanged: (value) {
-                          setState(() {
-                            id = 1;
-                          });
-                        }),
-                    Text("laki-laki"),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Radio(
-                        value: 2,
-                        groupValue: id,
-                        onChanged: (value) {
-                          setState(() {
-                            id = 2;
-                          });
-                        }),
-                    Text("perempuan"),
-                  ],
-                ),
-                Text("phone : " + myphone),
-                ElevatedButton(
-                    onPressed: () async {
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const SecondRoute()),
-                      );
-                      print("hasil input phone number : " + result.toString());
-                      setState(() {
-                        myphone = result.toString();
-                      });
-                    },
-                    child: Text("Phone Number")),
-                Center(
-                  child: Container(
-                    width: 128,
-                    child:
-                        ElevatedButton(onPressed: () {}, child: Text("submit")),
-                  ),
-                ),
+      appBar: AppBar(
+        title: Text("kalkulator persegi"),
+      ),
+      body: Container(
+        margin: EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.digitsOnly
               ],
-            )));
+              controller: ctrPanjang,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Masukan Panjang persegi',
+              ),
+            ),
+            Container(
+              height: 20,
+            ),
+            TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'tolong masuk kan angka';
+                }
+                return null;
+              },
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.digitsOnly
+              ],
+              controller: ctrLebar,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Masukan Lebar persegi',
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Center(
+                child: Container(
+              width: 200,
+              child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      if (ctrPanjang.text.isNotEmpty &&
+                          ctrLebar.text.isNotEmpty) {
+                        ctrHasil.text = (int.parse(ctrPanjang.text) *
+                                int.parse(ctrLebar.text))
+                            .toString();
+                      } else {
+                        Alert(
+                          context: context,
+                          type: AlertType.error,
+                          title: "Tolong Masukan Angka",
+                          //desc: "Selamat anda berhasil login",
+                          buttons: [
+                            DialogButton(
+                              child: Text(
+                                "Lanjut",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 14),
+                              ),
+                              onPressed: () => Navigator.pop(context),
+                            )
+                          ],
+                        ).show();
+                        return;
+                      }
+                    });
+                  },
+                  child: Text("HASIL")),
+            )),
+            SizedBox(
+              height: 10,
+            ),
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                "Hasil hitungan : ${ctrHasil.text}cm",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
